@@ -1,10 +1,9 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from path_params import *
 
-data_dir = "/home/nimda/TanadolWorks/Thesis/data"
-#data_dir = "/home/nimda/TanadolWorks/Thesis/synthetic_data"
-plot_dir = "/home/nimda/TanadolWorks/Thesis/plot"
+data_dir = SYNTHETIC_OUTPUT_DIR
 time_column = "Time"
 
 sensor_columns = [
@@ -12,7 +11,7 @@ sensor_columns = [
     "Coolant pressure", "lub oil temp", "Coolant temp" , "Engine Condition"
 ]
 
-os.makedirs(plot_dir, exist_ok=True)
+os.makedirs(PLOT_DIR, exist_ok=True)
 
 csv_files = [f for f in os.listdir(data_dir) if f.endswith(".csv")]
 
@@ -39,7 +38,7 @@ for file_name in csv_files:
     fig.suptitle(f"Sensor Data for {file_name}", fontsize=14)
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
-    output_file = os.path.join(plot_dir, file_name.replace(".csv", ".png"))
+    output_file = os.path.join(PLOT_DIR, file_name.replace(".csv", ".png"))
     plt.savefig(output_file)
     plt.close(fig)
 

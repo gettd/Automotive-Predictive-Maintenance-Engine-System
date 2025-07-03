@@ -2,10 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 from pathlib import Path
+from path_params import *
 
 #config
-INPUT_FILE = "/home/nimda/TanadolWorks/Thesis/data/engine_data.csv"
-OUTPUT_DIR = "/home/nimda/TanadolWorks/Thesis/synthetic_data"
 N_SEQUENCES = 5                      
 SEQUENCE_LENGTH = 10000 # number of rows (timesteps) per sequence
 SAMPLING_RATE_HZ = 1    # 1Hz = 1 row = 1 second
@@ -90,8 +89,8 @@ def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_lev
 
 
 def main():
-    input_path = Path(INPUT_FILE)
-    output_dir = Path(OUTPUT_DIR)
+    input_path = Path(SEED_DATASET)
+    output_dir = Path(SYNTHETIC_OUTPUT_DIR)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Loading input data: {input_path}")
