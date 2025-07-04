@@ -5,15 +5,14 @@ from pathlib import Path
 from path_params import *
 
 #config
-N_SEQUENCES = 5                      
+N_SEQUENCES = 20                      
 SEQUENCE_LENGTH = 10000 # number of rows (timesteps) per sequence
 SAMPLING_RATE_HZ = 1    # 1Hz = 1 row = 1 second
 RANDOM_SEED = 42
-NOISE_LEVEL = 0.01      # fractional noise for feature variation
+NOISE_LEVEL = 0.01
 
-
+#simulate early warning signs
 def add_precursor_ramp_enhanced(df, start_idx, ramp_len=20):
-    """Gradually modify sensor readings to simulate early warning signs."""
     for i in range(start_idx - ramp_len, start_idx):
         if i < 0:
             continue
@@ -30,9 +29,8 @@ def add_precursor_ramp_enhanced(df, start_idx, ramp_len=20):
         df.at[i, "Coolant pressure"] *= 1 + 0.05 * ramp_pos
         df.at[i, "lub oil temp"] += 3 * ramp_pos
 
-
+#force coolant to overheat and change engine condition to 1 (failed)
 def inject_overheat_enhanced(df, start_idx, duration):
-    """Force Coolant temp to overheat, degrade sensors, and flip engine condition to 1."""
     end_idx = min(start_idx + duration, len(df))
 
     for i in range(start_idx, len(df)):
@@ -50,15 +48,14 @@ def inject_overheat_enhanced(df, start_idx, duration):
         df.at[i, "lub oil temp"] += 1.0 + 3.0 * heat_progress
         df.at[i, "Engine Condition"] = 1
 
-
+#add noise to all features except engine condition and time
 def add_feature_noise(df, ref_df, noise_frac=0.01):
-    """Add small Gaussian noise to all numeric features except Engine Condition."""
     for col in df.columns:
         if col not in ["Time", "Engine Condition"]:
             sigma = ref_df[col].std() * noise_frac
             df[col] += np.random.normal(0, sigma, size=len(df))
 
-
+#generate n sequences that overheat randomly (when overheat, there will be warning signs beforehand)
 def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_level, seed=None):
     np.random.seed(seed)
     sequences = []
@@ -73,18 +70,25 @@ def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_lev
         df.insert(0, "Time", np.arange(seq_len) / sampling_rate)
         df["Engine Condition"] = 0
 
-        overheat_start = np.random.randint(int(seq_len * 0.6), int(seq_len * 0.75))
-        overheat_duration = np.random.randint(10, 20)  # seconds
+        will_overheat = np.random.rand() < 0.7  # 70% chance to overheat
 
-        add_precursor_ramp_enhanced(df, overheat_start, ramp_len=20)
-        inject_overheat_enhanced(df, overheat_start, overheat_duration)
+        if will_overheat:
+            overheat_start = np.random.randint(int(seq_len * 0.1), int(seq_len * 0.9))
+            overheat_duration = np.random.randint(10, 30) 
+            precursor_start = max(0, overheat_start - 20)
+
+            add_precursor_ramp_enhanced(df, precursor_start, ramp_len=20)
+            inject_overheat_enhanced(df, start_idx=overheat_start, duration=overheat_duration)
+
+        else:
+            pass 
+
         add_feature_noise(df, source_df, noise_frac=noise_level)
 
         ordered_cols = ["Time"] + feature_cols + ["Engine Condition"]
         sequences.append(df[ordered_cols])
 
     return sequences
-
 
 
 
