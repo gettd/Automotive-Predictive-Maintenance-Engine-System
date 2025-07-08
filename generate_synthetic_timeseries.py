@@ -29,7 +29,7 @@ def add_precursor_ramp_enhanced(df, start_idx, ramp_len=20):
         df.at[i, "Coolant pressure"] *= 1 + 0.05 * ramp_pos
         df.at[i, "lub oil temp"] += 3 * ramp_pos
 
-#force coolant to overheat and change engine condition to 1 (failed)
+#force coolant to overheat and change engine condition to 1 (failed), also degrade sensors
 def inject_overheat_enhanced(df, start_idx, duration):
     end_idx = min(start_idx + duration, len(df))
 
