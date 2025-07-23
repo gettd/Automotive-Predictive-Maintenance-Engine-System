@@ -18,34 +18,33 @@ def add_precursor_ramp_enhanced(df, start_idx, ramp_len=20):
             continue
         ramp_pos = (i - (start_idx - ramp_len) + 1) / ramp_len  # 0–1
 
-        df.at[i, "Coolant temp"] = 90 + 19 * ramp_pos + np.random.uniform(-0.5, 0.5)
-        df.at[i, "Lub oil pressure"] *= 1 - 0.15 * ramp_pos
-        df.at[i, "Fuel pressure"] *= 1 - 0.10 * ramp_pos
-
         base_rpm = df.at[i, "Engine rpm"]
-        rpm_jitter = np.random.normal(0, 20 + 30 * ramp_pos)
+        rpm_jitter = np.random.normal(0, 50 * ramp_pos)
+
         df.at[i, "Engine rpm"] = base_rpm + rpm_jitter
-        
-        df.at[i, "Coolant pressure"] *= 1 + 0.05 * ramp_pos
-        df.at[i, "lub oil temp"] += 3 * ramp_pos
+        df.at[i, "lub oil temp"] += 2.5 * ramp_pos
+        df.at[i, "Coolant temp"] = 90 + 20 * ramp_pos + np.random.uniform(-0.5, 0.5)
+        df.at[i, "Coolant pressure"] *= 1 + 0.03 * ramp_pos
+        df.at[i, "Lub oil pressure"] *= 1 - 0.10 * ramp_pos      
+        df.at[i, "Fuel pressure"] *= 1 - 0.05 * ramp_pos
 
 #force coolant to overheat and change engine condition to 1 (failed), also degrade sensors
 def inject_overheat_enhanced(df, start_idx, duration):
     end_idx = min(start_idx + duration, len(df))
 
     for i in range(start_idx, len(df)):
-        heat_progress = min(1.0, (i - start_idx) / duration)
-
-        df.at[i, "Coolant temp"] = np.random.uniform(111, 120)
-        df.at[i, "Lub oil pressure"] *= 0.85 - 0.05 * heat_progress
-        df.at[i, "Fuel pressure"] *= 0.90 - 0.05 * heat_progress
-
+        progress = min(1.0, (i - start_idx) / duration)
+        
         base_rpm = df.at[i, "Engine rpm"]
-        rpm_shift = np.random.normal(-30 * heat_progress, 50)
-        df.at[i, "Engine rpm"] = max(0, base_rpm + rpm_shift)
+        rpm_shift = np.random.normal(-50 * progress, 60)
 
-        df.at[i, "Coolant pressure"] *= 1.05 + 0.05 * heat_progress
-        df.at[i, "lub oil temp"] += 1.0 + 3.0 * heat_progress
+        df.at[i, "Engine rpm"] = max(0, base_rpm + rpm_shift)
+        df.at[i, "Lub oil pressure"] *= 0.85 - 0.05 * progress
+        df.at[i, "Coolant temp"] = np.random.uniform(112, 122)
+        df.at[i, "Coolant pressure"] *= 1.04 + 0.04 * progress
+        df.at[i, "lub oil temp"] += 1.0 + 2.5 * progress
+        df.at[i, "Fuel pressure"] *= 0.92 - 0.03 * progress
+
         df.at[i, "Engine Condition"] = 1
 
 #add noise to all features except engine condition and time
@@ -70,14 +69,15 @@ def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_lev
         df.insert(0, "Time", np.arange(seq_len) / sampling_rate)
         df["Engine Condition"] = 0
 
-        will_overheat = np.random.rand() < 0.7  # 70% chance to overheat
+        will_overheat = np.random.choice([True, False], p=[0.6, 0.4])
 
         if will_overheat:
-            overheat_start = np.random.randint(int(seq_len * 0.1), int(seq_len * 0.9))
-            overheat_duration = np.random.randint(10, 30) 
-            precursor_start = max(0, overheat_start - 20)
+            overheat_start = np.random.randint(int(seq_len * 0.05), int(seq_len * 0.95))
+            overheat_duration = np.random.randint(10, 60)
+            ramp_len = np.random.randint(10, 50)
+            precursor_start = max(0, overheat_start - ramp_len)
 
-            add_precursor_ramp_enhanced(df, precursor_start, ramp_len=20)
+            add_precursor_ramp_enhanced(df, precursor_start, ramp_len)
             inject_overheat_enhanced(df, start_idx=overheat_start, duration=overheat_duration)
 
         else:
