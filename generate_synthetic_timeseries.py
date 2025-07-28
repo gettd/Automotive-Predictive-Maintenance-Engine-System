@@ -5,7 +5,7 @@ from pathlib import Path
 from path_params import *
 
 #config
-N_SEQUENCES = 20                      
+N_SEQUENCES = 40                      
 SEQUENCE_LENGTH = 10000 # number of rows (timesteps) per sequence
 SAMPLING_RATE_HZ = 1    # 1Hz = 1 row = 1 second
 RANDOM_SEED = 42
