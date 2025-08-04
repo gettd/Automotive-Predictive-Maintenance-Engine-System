@@ -55,7 +55,7 @@ def add_feature_noise(df, ref_df, noise_frac=0.01):
             df[col] += np.random.normal(0, sigma, size=len(df))
 
 #generate n sequences that overheat randomly (when overheat, there will be warning signs beforehand)
-def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_level, seed=None):
+def generate_sequences(source_df, n_sequences, sampling_rate, noise_level, seed=None):
     np.random.seed(seed)
     sequences = []
 
@@ -65,6 +65,8 @@ def generate_sequences(source_df, n_sequences, seq_len, sampling_rate, noise_lev
     ]
 
     for seq_idx in range(n_sequences):
+        seq_len = np.random.randint(5000, 12000)
+        #seq_len = 10000
         df = source_df.sample(n=seq_len, replace=True).reset_index(drop=True)
         df.insert(0, "Time", np.arange(seq_len) / sampling_rate)
         df["Engine Condition"] = 0
@@ -104,7 +106,6 @@ def main():
     datasets = generate_sequences(
         source_df=source_df,
         n_sequences=N_SEQUENCES,
-        seq_len=SEQUENCE_LENGTH,
         sampling_rate=SAMPLING_RATE_HZ,
         noise_level=NOISE_LEVEL,
         seed=RANDOM_SEED,

@@ -35,7 +35,11 @@ for file_name in csv_files:
             axs[i].set_ylabel(col)
 
     axs[-1].set_xlabel("Time")
-    fig.suptitle(f"Sensor Data for {file_name}", fontsize=14)
+    last_time = df[time_column].iloc[-1]
+    fig.suptitle(
+        f"Sensor Data for {file_name}\nFinal Time: {last_time:.0f}",
+        fontsize=14
+    )
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
     output_file = os.path.join(PLOT_DIR, file_name.replace(".csv", ".png"))

@@ -11,25 +11,26 @@ from path_params import *
 
 os.makedirs(PLOT_TEST_DIR, exist_ok=True)
 
-n = int(input("Number of random test data: "))
+print(" \n")
+print("===================================================\n")
+label_input = input("Enter dataset label numbers (e.g., 3 21 18 ...): ")
+label_numbers = [int(x) for x in label_input.strip().split()]
 
-#load model and scaler
+# Load model and scaler
 model = load_model("lstm_model.keras")
 scaler = joblib.load("scaler.pkl")
 
 SEQUENCE_LENGTH = 30
 TARGET_COL = "Engine Condition"
 
-#prep test file(s)
+# Build file paths from input label numbers
 DATA_DIR = Path(SYNTHETIC_OUTPUT_DIR)
-all_files = list(DATA_DIR.glob("synthetic_timeseries_*.csv"))
-random.shuffle(all_files)
-selected_files = all_files[:n]
 
-print(f"Selected {n} files for testing:")
-
+selected_files = [DATA_DIR / f"synthetic_timeseries_{n}.csv" for n in label_numbers]
+print(f"Selected {len(selected_files)} files for testing:")
 for i, file in enumerate(selected_files, 1):
     print(f"[{i}] {file.name}")
+
 
 def create_sequences(df, sequence_length, feature_cols, target_col):
     X, y = [], []
@@ -63,7 +64,7 @@ for i, file in enumerate(selected_files, 1):
     plt.figure(figsize=(12, 4))
     plt.plot(y_test, label='Actual', alpha=0.7)
     plt.plot(y_pred_probs, label='Predicted Probability', alpha=0.7)
-    plt.title(f"Prediction — {file.name}")
+    plt.title(f"Prediction  {file.name}")
     plt.xlabel("Sample Index")
     plt.ylabel("Engine Condition")
     plt.ylim(0, 1)

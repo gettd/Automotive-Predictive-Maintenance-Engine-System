@@ -26,7 +26,6 @@ BATCH_SIZE = 64
 EPOCHS = 30
 LEARNING_RATE = 1e-3
 
-
 def set_seed(seed=42):
     np.random.seed(seed)
     random.seed(seed)
