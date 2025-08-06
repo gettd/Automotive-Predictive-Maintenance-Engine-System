@@ -50,7 +50,7 @@ Since the original dataset is not time series-based, this project performs:
 
 ## How to Run the Project
 
-Assuming you have the original dataset`engine_data.csv` ready in `Datasets/data`:
+Assuming you have the original dataset`engine_data.csv` ready in `datasets/data`:
 
 ### Step 1: Generate Synthetic Time Series
 ```bash
@@ -105,7 +105,7 @@ Each synthetic dataset contains 10,000 rows of 1Hz sensor data with simulated fa
 | 0    | 1600       | 4.3              | 2.1            | 90.1          | ... | 0                |
 | ...  | ...        | ...              | ...            | ...           | ... | 1 (if failed)    |
 
-Plots and model test results are saved under `Datasets/plot/`.
+Plots and model test results are saved under `datasets/plot/`.
 
 ---
 
