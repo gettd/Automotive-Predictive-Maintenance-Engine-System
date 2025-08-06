@@ -25,19 +25,25 @@ Since the original dataset is not time series-based, this project performs:
 ## Repository Structure
 
 ```
-.
-├── Datasets
-│   ├── data/              # Original dataset (CSV from Kaggle)
-│   ├── plot/              # All plots and visualizations
-│   └── synthetic_data/    # N generated synthetic time series datasets
+├── datasets
+    ├── data/              # Original dataset (CSV from Kaggle)
+    ├── plot/              # All plots and visualizations
+        ├── result/           # Visualization when testing
+        ├── test/
+        ├── train/
+        └── engine_data.png   #heatmap showing correlation coefficient of factors to engine condition
+    └── synthetic_data/    # N generated synthetic time series datasets
+        ├── test/
+        └── train/
+├── model
+    ├── lstm_model.keras       # Trained Keras model (output)
+    └── scaler.pkl             # Fitted scaler used for test-time normalization
 ├── generate_synthetic_timeseries.py  # Core generator script
 ├── path_params.py         # Centralized file paths
 ├── plot_tabular.py        # Plot Pearson correlation for original dataset
 ├── plot_timeseries.py     # Plot all generated synthetic sequences
 ├── train_model.py         # Train LSTM model using synthetic data
-├── test_model.py          # Evaluate model on K random datasets
-├── lstm_model.keras       # Trained Keras model (output)
-├── scaler.pkl             # Fitted scaler used for test-time normalization
+└── test_model.py          # Evaluate model on K random datasets
 ```
 
 ---
@@ -51,6 +57,7 @@ Assuming you have the original dataset`engine_data.csv` ready in `Datasets/data`
 python generate_synthetic_timeseries.py
 ```
 > Configure the number of generated datasets inside the script (by default, **N** = 40). More data leads to better results but increases training time.
+> Allocate the datasets to training and testing directory as you prefer.
 
 ### Step 2 (Optional): Visualize the Generated Data
 ```bash
