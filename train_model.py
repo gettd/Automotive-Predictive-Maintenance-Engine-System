@@ -41,21 +41,25 @@ feature_cols = [col for col in train_df.columns if col != TARGET_COL]
 scaler = MinMaxScaler()
 train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
 
-def create_sequences(df, sequence_length, feature_cols, target_col):
+PREDICT_HORIZON = 1200 #predict next 20 min(max len of possible early sign)
+def create_sequences(df, sequence_length, feature_cols, target_col, pdh):
     X, y = [], []
     data = df[feature_cols].values
     labels = df[target_col].values
 
-    for i in range(len(df) - sequence_length):
+    for i in range(len(df) - sequence_length - pdh + 1):
+        if i + sequence_length + pdh - 1 >= len(df): break
         seq_x = data[i:i + sequence_length]
-        seq_y = labels[i + sequence_length - 1]
+        seq_y = labels[i + sequence_length + pdh - 1]
         X.append(seq_x)
         y.append(seq_y)
 
     return np.array(X), np.array(y)
 
+
 #prepare train and test sequences
-X_train, y_train = create_sequences(train_df, SEQUENCE_LENGTH, feature_cols, TARGET_COL)
+X_train, y_train = create_sequences(train_df, SEQUENCE_LENGTH, feature_cols, TARGET_COL, PREDICT_HORIZON)
+
 
 #build lstm model
 input_dim = X_train.shape[2]
