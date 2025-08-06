@@ -86,6 +86,6 @@ history = model.fit(
 )
 
 #save model and scaler
-model.save("lstm_model.keras")
-joblib.dump(scaler, "scaler.pkl")
+model.save("model/lstm_model.keras")
+joblib.dump(scaler, "model/scaler.pkl")
 print("Model and scaler saved.")

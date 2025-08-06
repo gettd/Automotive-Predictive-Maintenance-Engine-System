@@ -12,13 +12,13 @@ from path_params import *
 os.makedirs(PLOT_RESULT_DIR, exist_ok=True)
 
 # Load model and scaler
-model = load_model("lstm_model.keras")
-scaler = joblib.load("scaler.pkl")
+model = load_model("model/lstm_model.keras")
+scaler = joblib.load("model/scaler.pkl")
 
 SEQUENCE_LENGTH = 30
 TARGET_COL = "Engine Condition"
 DATA_DIR = Path(SYNTHETIC_OUTPUT_TEST_DIR)
-PREDICT_HORIZON = 800 #10 min threshold that model should be able to predict before failure
+PREDICT_HORIZON = 120 #min threshold
 
 selected_files = sorted(DATA_DIR.glob("synthetic_timeseries_*.csv"))
 
@@ -45,14 +45,14 @@ def create_sequences(df, sequence_length, feature_cols, target_col, pdh):
     return np.array(X), np.array(y), np.array(y_actual)
 
 #for analysis
-def first_crossing(signal, timestamps, threshold=0.8):
+def first_crossing(signal, timestamps, threshold=0.3):
     for i, v in enumerate(signal):
         if v > threshold:
             return timestamps[i]
     return None  # no crossing found
 
 #locking the predicted value since we only care about the initial classification
-def apply_locking(preds, threshold=0.5):
+def apply_locking(preds, threshold=0.3):
     locked = []
     lock = False
     for p in preds:
@@ -76,8 +76,8 @@ for i, file in enumerate(selected_files, 1):
     y_pred_locked = apply_locking(y_pred_probs)
 
     # Binary classification for evaluation
-    y_pred_binary = (y_pred_locked > 0.5).astype(int)
-    y_test_binary = (y_test > 0.5).astype(int)
+    y_pred_binary = (y_pred_locked > 0.3).astype(int)
+    y_test_binary = (y_test > 0.3).astype(int)
     acc = accuracy_score(y_test_binary, y_pred_binary)
     accuracies.append(acc)
 
@@ -101,7 +101,7 @@ for i, file in enumerate(selected_files, 1):
     plt.figure(figsize=(12, 4))
     plt.plot(y_test, label='Expected Prediction', alpha=0.7, linestyle='--', color = "red")
     plt.plot(y_actual, label='Actual Condition', alpha=0.7, color = "green")
-    plt.plot(y_pred_probs, label='Raw Prediction', alpha=0.7, linestyle=':')
+    #plt.plot(y_pred_probs, label='Raw Prediction', alpha=0.7, linestyle=':')
     plt.plot(y_pred_locked, label='Locked Prediction', alpha=0.9, color = "blue")
     plt.title(f"Prediction Result — {file.name}")
     plt.xlabel("Sample Index")
