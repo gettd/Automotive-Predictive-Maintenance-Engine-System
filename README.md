@@ -57,6 +57,7 @@ Assuming you have the original dataset`engine_data.csv` ready in `Datasets/data`
 python generate_synthetic_timeseries.py
 ```
 > Configure the number of generated datasets inside the script (by default, **N** = 40). More data leads to better results but increases training time.
+
 > Allocate the datasets to training and testing directory as you prefer.
 
 ### Step 2 (Optional): Visualize the Generated Data
