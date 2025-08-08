@@ -120,3 +120,4 @@ This project is released under a **custom fair-use license**:
 ## Related Paper (and full reference of other papers)
 
 📄 [Thesis Full Paper Repository](https://github.com/gettd/Thesis-Paper)
+[slide](https://docs.google.com/presentation/d/1ua4ZmV-eydtFXtYIBoyijZYJOtkEgYoP/edit?usp=sharing&ouid=117551709161989122124&rtpof=true&sd=true)
