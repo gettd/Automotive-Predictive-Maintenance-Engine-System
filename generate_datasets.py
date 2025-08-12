@@ -20,15 +20,15 @@ def add_precursor_ramp_enhanced(df, start_idx, end_idx):
             continue
         ramp_progress = (i - start_idx + 1) / ramp_len
 
-        # RPM jitter: realistic idle variability
+        # RPM jitter
         base_rpm = df.at[i, "Engine rpm"]
-        rpm_jitter = np.random.normal(0, 30 * np.sqrt(ramp_progress))  # σ ≈ 30 rpm, increases with ramp
+        rpm_jitter = np.random.normal(0, 30 * np.sqrt(ramp_progress))
         df.at[i, "Engine rpm"] = base_rpm + rpm_jitter
 
         # Lub oil temp: gradual nonlinear rise (viscosity drop trend)
         df.at[i, "lub oil temp"] += np.random.normal(0, 0.3) + 1.0 + 3.5 * (ramp_progress ** 1.5)
 
-        # Coolant temp: exponential warm-up trend (Haury & Volkering, 2011)
+        # Coolant temp: exponential warm-up trend
         A = np.random.uniform(6.0, 18.0)  # °C rise before overheat
         tau = np.random.uniform(30, 200)  # warm-up time constant
         t_rel = (i - start_idx + 1)
