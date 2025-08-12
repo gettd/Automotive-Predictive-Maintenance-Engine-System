@@ -25,32 +25,40 @@ Since the original dataset is not time series-based, this project performs:
 ## Repository Structure
 
 ```
-.
-├── Datasets
-│   ├── data/              # Original dataset (CSV from Kaggle)
-│   ├── plot/              # All plots and visualizations
-│   └── synthetic_data/    # N generated synthetic time series datasets
+├── datasets
+    ├── data/              # Original dataset (CSV from Kaggle)
+    ├── plot/              # All plots and visualizations
+        ├── result/           # Visualization when testing
+        ├── test/
+        ├── train/
+        └── engine_data.png   #heatmap showing correlation coefficient of factors to engine condition
+    └── synthetic_data/    # N generated synthetic time series datasets
+        ├── test/
+        └── train/
+├── model
+    ├── lstm_model.keras       # Trained Keras model (output)
+    └── scaler.pkl             # Fitted scaler used for test-time normalization
 ├── generate_synthetic_timeseries.py  # Core generator script
 ├── path_params.py         # Centralized file paths
 ├── plot_tabular.py        # Plot Pearson correlation for original dataset
 ├── plot_timeseries.py     # Plot all generated synthetic sequences
 ├── train_model.py         # Train LSTM model using synthetic data
-├── test_model.py          # Evaluate model on K random datasets
-├── lstm_model.keras       # Trained Keras model (output)
-├── scaler.pkl             # Fitted scaler used for test-time normalization
+└── test_model.py          # Evaluate model on K random datasets
 ```
 
 ---
 
 ## How to Run the Project
 
-Assuming you have the original dataset`engine_data.csv` ready in `Datasets/data`:
+Assuming you have the original dataset`engine_data.csv` ready in `datasets/data`:
 
 ### Step 1: Generate Synthetic Time Series
 ```bash
 python generate_synthetic_timeseries.py
 ```
 > Configure the number of generated datasets inside the script (by default, **N** = 40). More data leads to better results but increases training time.
+
+> Allocate the datasets to training and testing directory as you prefer.
 
 ### Step 2 (Optional): Visualize the Generated Data
 ```bash
@@ -97,7 +105,7 @@ Each synthetic dataset contains 10,000 rows of 1Hz sensor data with simulated fa
 | 0    | 1600       | 4.3              | 2.1            | 90.1          | ... | 0                |
 | ...  | ...        | ...              | ...            | ...           | ... | 1 (if failed)    |
 
-Plots and model test results are saved under `Datasets/plot/`.
+Plots and model test results are saved under `datasets/plot/`.
 
 ---
 
@@ -112,3 +120,4 @@ This project is released under a **custom fair-use license**:
 ## Related Paper (and full reference of other papers)
 
 📄 [Thesis Full Paper Repository](https://github.com/gettd/Thesis-Paper)
+[slide](https://docs.google.com/presentation/d/1ua4ZmV-eydtFXtYIBoyijZYJOtkEgYoP/edit?usp=sharing&ouid=117551709161989122124&rtpof=true&sd=true)
