@@ -99,10 +99,10 @@ for i, file in enumerate(selected_files, 1):
 
     # Plotting
     plt.figure(figsize=(12, 4))
-    plt.plot(y_test, label='Expected Prediction', alpha=0.7, linestyle='--', color = "red")
+    #plt.plot(y_test, label='Expected Prediction', alpha=0.7, linestyle='--', color = "red")
     plt.plot(y_actual, label='Actual Condition', alpha=0.7, color = "green")
     #plt.plot(y_pred_probs, label='Raw Prediction', alpha=0.7, linestyle=':')
-    plt.plot(y_pred_locked, label='Locked Prediction', alpha=0.9, color = "blue")
+    plt.plot(y_pred_locked, label='Prediction', alpha=0.9, color = "blue")
     plt.title(f"Prediction Result — {file.name}")
     plt.xlabel("Sample Index")
     plt.ylabel("Engine Condition")
