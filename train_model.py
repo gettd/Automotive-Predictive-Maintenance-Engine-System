@@ -24,6 +24,7 @@ BATCH_SIZE = 64
 EPOCHS = 30
 LEARNING_RATE = 1e-3
 
+ALPHA = 0.7        # trade-off: 0.7 accuracy vs 0.3 earliness
 CONF_THRESHOLD = 0.6
 
 def set_seed(seed=42):
@@ -66,9 +67,29 @@ model = Sequential([
     Dense(1, activation='sigmoid')
 ])
 
+@tf.function
+def earliness_loss(y_true, y_pred):
+    """
+    Custom loss = alpha * cross_entropy + (1-alpha) * earliness_penalty
+    y_true: [batch, 1]
+    y_pred: [batch, 1]
+    """
+    # standard cross-entropy
+    ce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
+
+    # confidence = max(p, 1-p)
+    conf = tf.maximum(y_pred, 1.0 - y_pred)
+
+    # normalize earliness: want conf high early, so penalize low conf
+    # penalty = 1 - conf  (lower if model is confident)
+    penalty = 1.0 - conf
+
+    return ALPHA * ce + (1 - ALPHA) * penalty
+
 model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
-              loss='binary_crossentropy',
+              loss=earliness_loss,
               metrics=['accuracy'])
+
 
 # train
 early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
@@ -81,25 +102,6 @@ history = model.fit(
     callbacks=[early_stop],
     verbose=1
 )
-
-# confidence-based early inference
-def early_predict(model, sequence, threshold=CONF_THRESHOLD):
-    for t in range(1, len(sequence) + 1):
-        subseq = sequence[:t]  
-        subseq = np.expand_dims(subseq, axis=0)  # (1, t, features)
-        if t < SEQUENCE_LENGTH:
-            pad_len = SEQUENCE_LENGTH - t
-            subseq = np.pad(subseq, ((0,0),(pad_len,0),(0,0)), mode="constant")
-        
-        prob = model.predict(subseq, verbose=0)[0][0]
-        conf = max(prob, 1 - prob)
-        if conf >= threshold:
-            return int(prob > 0.5), t   # prediction, timestep
-    
-    # if never confident, predict at last step
-    prob = model.predict(subseq, verbose=0)[0][0]
-    return int(prob > 0.5), len(sequence)
-
 # Save model + scaler
 model.save("model/lstm_model.keras")
 joblib.dump(scaler, "model/scaler.pkl")

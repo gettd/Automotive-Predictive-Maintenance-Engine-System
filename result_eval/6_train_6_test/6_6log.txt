@@ -1,0 +1,102 @@
+Found 10 files for testing:
+[1] synthetic_timeseries_31.csv
+[2] synthetic_timeseries_32.csv
+[3] synthetic_timeseries_33.csv
+[4] synthetic_timeseries_34.csv
+[5] synthetic_timeseries_35.csv
+[6] synthetic_timeseries_36.csv
+[7] synthetic_timeseries_37.csv
+[8] synthetic_timeseries_38.csv
+[9] synthetic_timeseries_39.csv
+[10] synthetic_timeseries_40.csv
+
+=================================
+Test File 1 — synthetic_timeseries_31.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 2 — synthetic_timeseries_32.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 3 — synthetic_timeseries_33.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 4 — synthetic_timeseries_34.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 5 — synthetic_timeseries_35.csv
+Accuracy: 0.9874
+True Failure at: 816 sec
+Predicted at: 411 sec
+Earliness (how much earlier prediction occurs): 405 sec
+=================================
+
+
+=================================
+Test File 6 — synthetic_timeseries_36.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 7 — synthetic_timeseries_37.csv
+Accuracy: 0.9835
+True Failure at: 4243 sec
+Predicted at: 3486 sec
+Earliness (how much earlier prediction occurs): 757 sec
+=================================
+
+
+=================================
+Test File 8 — synthetic_timeseries_38.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+=================================
+Test File 9 — synthetic_timeseries_39.csv
+Accuracy: 0.9270
+True Failure at: 5764 sec
+Predicted at: 5694 sec
+Earliness (how much earlier prediction occurs): 70 sec
+=================================
+
+
+=================================
+Test File 10 — synthetic_timeseries_40.csv
+Accuracy: 1.0000
+True Failure at: None sec
+Predicted at: None sec
+=================================
+
+
+Testing complete. All plots saved.
+
+===================================================
+Average Accuracy Across All Test Files: 0.9898
+Average Earliness (sec): 410.67
+Tested 10 file(s).
+===================================================

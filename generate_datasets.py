@@ -222,7 +222,7 @@ def simulate_sequence_from_seed(seed_row, model, seq_len, rng):
             fail_cfg[(k, "plateau")] = (min(v["plateau"]), max(v["plateau"]))
 
     col_idx = {c: i for i, c in enumerate(feature_cols)}
-    engine_condition = np.zeros(seq_len, dtype=int)
+    engine_condition = np.zeros(seq_len, dtype=float)
 
     for t in range(1, seq_len):
         x_prev = X[t - 1, :].copy()
@@ -257,6 +257,13 @@ def simulate_sequence_from_seed(seed_row, model, seq_len, rng):
             if ("Engine rpm", "jitter_sigma") in prec_cfg:
                 X_r = col_idx["Engine rpm"]
                 x_new[X_r] += rng.normal(0, prec_cfg[("Engine rpm", "jitter_sigma")] * (0.5 + w))
+            prec_len = max(1, (precursor_end - precursor_start))
+            ramp_pos = (t - precursor_start + 1) / prec_len  # in (0,1]
+            deg_shape = 1.6
+            deg_frac = float(min(1.0, ramp_pos ** deg_shape))
+            engine_condition[t] = deg_frac
+            
+
 
         if will_overheat and (overheat_start is not None) and (t >= overheat_start):
             engine_condition[t] = 1
@@ -285,11 +292,14 @@ def simulate_sequence_from_seed(seed_row, model, seq_len, rng):
                 shift = x_prev[X_r] * (mean_shift_perc if isinstance(mean_shift_perc, float) else rng.uniform(*FAILURE["Engine rpm"]["mean_shift_perc"]))
                 x_new[X_r] = max(0.0, x_prev[X_r] + shift * prog + jitter)
 
-        if engine_condition[t] == 0:
-            engine_condition[t] = engine_condition[t - 1]
+        if t > 0:
+            engine_condition[t] = max(engine_condition[t], engine_condition[t - 1])
 
-            x_new = np.array([np.clip(val, FEATURE_RANGES[col][0], FEATURE_RANGES[col][1])
-                    for val, col in zip(x_new, feature_cols)])
+        x_new = np.array([
+            np.clip(val, FEATURE_RANGES[col][0], FEATURE_RANGES[col][1])
+            for val, col in zip(x_new, feature_cols)
+        ])
+
         X[t, :] = x_new
 
     return X, engine_condition
