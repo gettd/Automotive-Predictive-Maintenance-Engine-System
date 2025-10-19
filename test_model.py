@@ -59,13 +59,13 @@ def apply_locking(preds, threshold=THRESHOLD ):
             locked.append(1.0)
         elif i >= 50 and p > threshold:
             j+=1
-            if j>=180:          #to ignore jumps
+            if j>=60:          #to ignore jumps
                 lock = True
                 locked.append(1.0)
             else:
                 locked.append(0)
         else:
-            j=0
+            #j=0
             locked.append(0)
     return np.array(locked)
 
