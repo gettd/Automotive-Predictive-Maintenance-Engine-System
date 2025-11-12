@@ -79,7 +79,7 @@ P_WILL_OVERHEAT = 0.6
 OVERHEAT_START_FRAC = (0.05, 0.95)      # uniform fraction of the sequence
 PRECURSOR_LEN_RANGE = (60, 1800)        # seconds of early warning signs (1–30 min)
 OVERHEAT_DURATION_RANGE = (20, 120)     # time to reach full failure (seconds)
-OVERHEAT_COOLANT_TEMP = (114, 124)      # plateau range (°C) once overheated
+OVERHEAT_COOLANT_TEMP = (114, 200)      # plateau range (°C) once overheated
 
 # Magnitudes applied during precursor + failure 
 PRECURSOR = {
@@ -90,7 +90,6 @@ PRECURSOR = {
     "Fuel pressure":    {"mult":  (-0.02, -0.005)},
     "Engine rpm":       {"jitter_sigma": (10, 60)},
 }
-
 FAILURE = {
     "Coolant temp":     {"plateau": OVERHEAT_COOLANT_TEMP},
     "lub oil temp":     {"drift": (0.01, 0.05)},
@@ -126,7 +125,6 @@ def bounded_update(prev_val, feature, failure_drift=False):
 #copula fit/sample
 def _empirical_cdf_vals(x):
     return np.sort(x.astype(float))
-
 def _inverse_ecdf(sorted_vals, u):
     if u <= 0: return sorted_vals[0]
     if u >= 1: return sorted_vals[-1]
@@ -302,6 +300,31 @@ def simulate_sequence_from_seed(seed_row, model, seq_len, rng):
 
         X[t, :] = x_new
 
+    dropout_min_dur = 180
+    max_start = seq_len - dropout_min_dur - 100
+    if max_start > 200:
+        #dropout_type = rng.choice(["none", "rpm_only", "coolant_only", "both"],
+         #                         p=[0.5, 0.25, 0.15, 0.10])
+        dropout_type = rng.choice(["none", "rpm_only", "coolant_only", "both"],
+                                  p=[0.0, 0.25, 0.65, 0.10])
+        if dropout_type != "none":
+            start_t = rng.integers(100, max_start)
+            dur = rng.integers(dropout_min_dur, dropout_min_dur + 120)
+            end_t = min(seq_len, start_t + dur)
+            rpm_idx = col_idx["Engine rpm"]
+            temp_idx = col_idx["Coolant temp"]
+            if dropout_type in ["rpm_only", "both"]:
+                X[start_t:end_t, rpm_idx] = 0.0
+            if dropout_type in ["coolant_only", "both"]:
+                X[start_t:end_t, temp_idx] = 0.0
+            if dropout_type in ["coolant_only", "both"]:
+                ramp_dur = 60
+                ramp_vals = np.linspace(0, 1, ramp_dur)
+                for tt in range(start_t, end_t):
+                    elapsed = tt - start_t
+                    engine_condition[tt] = ramp_vals[elapsed] if elapsed < ramp_dur else 1.0
+                engine_condition[end_t:] = 1.0
+
     return X, engine_condition
 
 
@@ -331,7 +354,7 @@ def main():
         out_df.insert(0, "Time", t)
         out_df[TARGET_COL] = y
 
-        out_path = out_dir / f"synthetic_timeseries_{k}.csv"
+        out_path = out_dir / f"synthetic_timeseries_drop_{k}.csv"
         out_df.to_csv(out_path, index=False)
         print(f"Saved: {out_path} (len={seq_len})")
 

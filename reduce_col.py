@@ -2,31 +2,33 @@ import os
 import pandas as pd
 from path_params import *
 
-#input_dir = SYNTHETIC_OUTPUT_TEST_DIR
-#input_dir = SYNTHETIC_OUTPUT_TRAIN_DIR
+
+
 
 keep_columns = ["Time", "Engine rpm", "Coolant temp", "Engine Condition"]
 fill_value = 0
 
-
+input_dir = SYNTHETIC_OUTPUT_TRAIN_DIR
 def remove_unwanted_columns(input_dir, keep_columns):
     """
     Loop through all CSV files in the input_dir and remove columns not in keep_columns.
     """
-    for file_name in os.listdir(input_dir):
-        if file_name.endswith(".csv"):
-            file_path = os.path.join(input_dir, file_name)
+    for i in range(0,2):
+        for file_name in os.listdir(input_dir):
+            if file_name.endswith(".csv"):
+                file_path = os.path.join(input_dir, file_name)
 
-            # Read CSV
-            df = pd.read_csv(file_path)
+                # Read CSV
+                df = pd.read_csv(file_path)
 
-            # Keep only desired columns (ignore missing ones safely)
-            df = df[[col for col in keep_columns if col in df.columns]]
+                # Keep only desired columns (ignore missing ones safely)
+                df = df[[col for col in keep_columns if col in df.columns]]
 
-            # Overwrite file with the reduced data
-            df.to_csv(file_path, index=False)
+                # Overwrite file with the reduced data
+                df.to_csv(file_path, index=False)
 
-            print(f"Processed and saved: {file_name}  (kept {len(df.columns)} columns)")
+                print(f"Processed and saved: {file_name}  (kept {len(df.columns)} columns)")
+        input_dir = SYNTHETIC_OUTPUT_TEST_DIR
 
     print("All CSV files updated successfully (unwanted columns removed).")
 

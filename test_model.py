@@ -19,7 +19,9 @@ TARGET_COL = "Engine Condition"
 DATA_DIR = Path(SYNTHETIC_OUTPUT_TEST_DIR)
 THRESHOLD = 0.1
 
-selected_files = sorted(DATA_DIR.glob("synthetic_timeseries_*.csv"))
+#selected_files = sorted(DATA_DIR.glob("synthetic_timeseries_*.csv"))
+#selected_files = sorted(DATA_DIR.glob("obd_21-10-2025_21-50-55.csv"))
+selected_files = sorted(DATA_DIR.glob("*.csv"))
 
 print(f"Found {len(selected_files)} files for testing:")
 for i, file in enumerate(selected_files, 1):

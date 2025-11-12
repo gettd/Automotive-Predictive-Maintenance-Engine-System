@@ -7,8 +7,7 @@ data_dir = SYNTHETIC_OUTPUT_DIR
 time_column = "Time"
 
 sensor_columns = [
-    "Engine rpm", "Lub oil pressure", "Fuel pressure",
-    "Coolant pressure", "lub oil temp", "Coolant temp", "Engine Condition"
+    "Engine rpm", "Coolant temp", "Engine Condition"
 ]
 
 os.makedirs(PLOT_DIR, exist_ok=True)

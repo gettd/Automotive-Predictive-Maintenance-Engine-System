@@ -16,7 +16,6 @@ from path_params import *
 DATA_DIR = Path(SYNTHETIC_OUTPUT_TRAIN_DIR)
 FILE_PREFIX = "synthetic_timeseries_"
 FILE_SUFFIX = ".csv"
-TOTAL_FILES = 40
 
 SEQUENCE_LENGTH = 30
 TARGET_COL = "Engine Condition"
