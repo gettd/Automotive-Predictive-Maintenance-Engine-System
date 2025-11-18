@@ -1,5 +1,7 @@
 # Automotive Predictive Maintenance Engine System
 
+NOTE: FIX FROM STRUCTURE ONWARD
+
 This repository contains the codebase and data pipeline for **transforming tabular engine health data into synthetic time series datasets**, and training/testing a machine learning model to perform predictive maintenance on vehicle engines.
 
 This project is part of the Computer Engineering (EGCI) Bachelor Thesis at **Mahidol University**. The full paper, including background, motivations, methodology, and results, can be found [in this repository](https://github.com/gettd/Thesis-Paper).
