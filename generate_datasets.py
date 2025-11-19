@@ -299,7 +299,7 @@ def simulate_sequence_from_seed(seed_row, model, seq_len, rng):
         ])
 
         X[t, :] = x_new
-
+    #remove this if not want drop 
     dropout_min_dur = 180
     max_start = seq_len - dropout_min_dur - 100
     if max_start > 200:
@@ -354,6 +354,7 @@ def main():
         out_df.insert(0, "Time", t)
         out_df[TARGET_COL] = y
 
+        #out_path = out_dir / f"synthetic_timeseries_{k}.csv"
         out_path = out_dir / f"synthetic_timeseries_drop_{k}.csv"
         out_df.to_csv(out_path, index=False)
         print(f"Saved: {out_path} (len={seq_len})")
